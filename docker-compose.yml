@@ -1,0 +1,50 @@
+version: '3.1'
+
+services:
+
+  postgres:
+    tty: true
+    build: ./postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./web/iresponse:/web/html
+    environment:
+      POSTGRES_PASSWORD: "maroczik" 
+    network_mode: host
+
+  web:
+    tty: true
+    build: ./web
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./web/iresponse:/web/html
+    network_mode: host
+    depends_on:
+      - postgres
+      
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8000:8080
+
+  magic:
+    tty: true
+    build: ./magic
+    restart: always
+    ports:
+      - 9090:9090
+      - 9800:9800
+      - 8080:8080
+      - 3000:3000
+    environment:
+      DARK_MODE: "1"
+      KEEP_APP_RUNNING: "1"
+      VNC_PASSWORD: "maroczik"
+      WEB_LISTENING_PORT: "5980"
+      APP_NAME: "IR-X Robot Connector"
+    network_mode: host
